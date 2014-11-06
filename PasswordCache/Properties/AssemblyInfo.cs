@@ -7,8 +7,8 @@ using System.Windows;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("PasswordCache")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("PasswordCache 1.0")]
+[assembly: AssemblyDescription("Программа для хранения логинов и паролей")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PasswordCache")]

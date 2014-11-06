@@ -2,125 +2,158 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Properties="clr-namespace:PasswordCache.Properties" x:Class="PasswordCache.MainWindow"
-        Title="Password cache 1.0" FontFamily="Georgia" MinHeight="450" MinWidth="820"  Height="450" Width="820" Closing="Window_Closing" WindowStyle="ThreeDBorderWindow" Icon="Resource/Key-512.png">
+        Title="Password cache 1.0" FontFamily="Georgia" MinHeight="570" MinWidth="1000"  Height="570" Width="1000" Closing="Window_Closing" WindowStyle="ThreeDBorderWindow" Icon="Resource/Key-512.png">
 
-    <StackPanel Orientation="Vertical" Margin="0,0,0,0">
-        <Menu>
-            <MenuItem Header="Приложение" VerticalAlignment="Center"></MenuItem>
-            <MenuItem Header="Справка">
+    <StackPanel Orientation="Vertical">
+        <Menu Height="30">
+            <MenuItem Header="Приложение" VerticalAlignment="Center">
+                <MenuItem Header="Открыть..." Click="OpenFile">
+                    <MenuItem.Icon>
+                        <Image Source="Resource/Open_file.ico" Width="20" Height="22"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                <MenuItem Header="Сохранить как..." Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <Image Source="Resource/save-512.ico" Width="22" Height="22"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Выйти" Click="MenuItem_Click_1">
+                    <MenuItem.Icon>
+                        <Image Source="Resource/Open_door.ico" Width="20" Height="20"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Справка" Click="MenuItem_Click_2">
                 <MenuItem.Icon>
-                    <Image Source="Resource/question_mark_button_symbol-300x300.png" Width="17" Height="17"/>
+                    <Image Source="Resource/question_mark_button_symbol-300x300.png" Width="22" Height="22"/>
                 </MenuItem.Icon>
             </MenuItem>
         </Menu>
-        <StackPanel Orientation="Horizontal" Margin="10,5,10,0">
-            <StackPanel Orientation="Vertical">
-                <GroupBox Header="Генерация паролей" Width="200" Height="250" BorderBrush="Blue">
+        <Viewbox Stretch="Fill">
+            <StackPanel Orientation="Vertical" MouseLeave="GroupBox_MouseLeave">
+                <StackPanel Orientation="Horizontal" Margin="10,5,10,0">
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Количество символов"/>
-                            <TextBox x:Name="Count" Width="25" Height="20" MaxLength="2"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Использовать цифры"/>
-                            <CheckBox x:Name="Numb" Height="20" Width="20" Margin="10,10,0,0"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Использовать регистр"/>
-                            <CheckBox x:Name="isCase" Height="20" Width="20" Margin="6,10,0,0"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" IsEnabled="False"> 
-                            <Label Content="На основе слова"/>
-                            <CheckBox Height="20" Width="20" Margin="35,10,0,0" Click="CheckBox_Click"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="World" Width="160" Visibility="Collapsed"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="Сгенерировать пароль" Click="Button_Click"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,5">
-                            <TextBox x:Name="ResultPass" Width="160" Visibility="Collapsed"/>
-                        </StackPanel>
+                        <GroupBox Header="Генерация паролей" Width="200" Height="250" MouseEnter="GroupBox_MouseEnter" Tag="Блок для генерации пароля">
+                            <StackPanel Orientation="Vertical">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="143"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label Content="Количество символов" Grid.Column="0" Grid.Row="0"/>
+                                    <TextBox x:Name="Count" MaxLength="2" Grid.Column="1" Grid.Row="0" Background="{DynamicResource AreaBackground}"/>
+                                    <Label Content="Использовать цифры" Grid.Column="0" Grid.Row="1"/>
+                                    <CheckBox x:Name="Numb" Grid.Column="1" Grid.Row="1" Margin="0,5" Background="{DynamicResource AreaBackground}"/>
+                                    <Label Content="Использовать регистр" Grid.Column="0" Grid.Row="2"/>
+                                    <CheckBox x:Name="isCase" Margin="0,5" Grid.Column="1" Grid.Row="2" Background="{DynamicResource AreaBackground}"/>
+                                    <Label Content="На основе слова" Grid.Column="0" Grid.Row="3" IsEnabled="False"/>
+                                    <CheckBox Margin="0,5" Click="CheckBox_Click" IsEnabled="False" Grid.Column="1" Grid.Row="3" Background="{DynamicResource AreaBackground}"/>
+                                </Grid>
+                                <TextBox x:Name="World" Margin="5,5" IsEnabled="False" Background="{DynamicResource AreaBackground}"/>
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                    <Button Content="Генерация пароля" Click="Button_Click"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,5" HorizontalAlignment="Center">
+                                    <TextBox x:Name="ResultPass" Width="160" Visibility="Collapsed" Background="{DynamicResource AreaBackground}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                    <StackPanel>
+                        <GroupBox Header="Пароли" Width="570" Height="250" Margin="10,0,0,0" MouseLeave="GroupBox_MouseLeave">
+                            <TabControl>
+                                <TabItem Header="Все пароли" MouseEnter="GroupBox_MouseEnter" Tag="Все пароли">
+                                    <DataGrid x:Name="Table" ColumnWidth="Auto" AutoGenerateColumns="False" CanUserAddRows="True" AlternatingRowBackground="LightBlue" AlternationCount="2">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding Name}" Header="Имя сайта или игры" Width="Auto"/>
+                                            <DataGridTextColumn Binding="{Binding Log}"  Header="Логин" Width="Auto"/>
+                                            <DataGridTextColumn Binding="{Binding Pas}"  Header="Пароль" Width="Auto"/>
+                                            <DataGridTextColumn Binding="{Binding Com}" Header="Комментарий" Width="Auto"/>
+                                            <DataGridTextColumn Binding="{Binding HLink}" Header="Ссылка"/>
+                                        </DataGrid.Columns>
+                                        <DataGrid.ColumnHeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                                <Setter Property="Foreground" Value="{StaticResource PrimaryFont}" />
+                                                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                            </Style>
+                                        </DataGrid.ColumnHeaderStyle>
+                                    </DataGrid>
+                                </TabItem>
+                                <TabItem Header="Поиск" MouseEnter="GroupBox_MouseEnter" Tag="Поиск по записям">
+                                    <StackPanel Orientation="Vertical" Background="White">
+                                        <StackPanel Orientation="Horizontal" Margin="0,5">
+                                            <Label>Слово для поиска:</Label>
+                                            <TextBox x:Name="Search" Width="150" Margin="10,0,0,0" Background="{DynamicResource AreaBackground}" />
+                                            <Button x:Name="SearchButton" Width="120" Margin="10,0,0,0" Content="Поиск" Click="GoSearch"/>
+                                        </StackPanel>
+                                        <DataGrid x:Name="TableView" ColumnWidth="Auto" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" AlternatingRowBackground="LightBlue" AlternationCount="2">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Binding="{Binding Name}" Header="Имя сайта или игры" Width="Auto"/>
+                                                <DataGridTextColumn Binding="{Binding Log}"  Header="Логин" Width="Auto"/>
+                                                <DataGridTextColumn Binding="{Binding Pas}"  Header="Пароль" Width="Auto"/>
+                                                <DataGridTextColumn Binding="{Binding Com}" Header="Комментарий" Width="Auto"/>
+                                                <DataGridTextColumn Binding="{Binding HLink}" Header="Ссылка"/>
+                                            </DataGrid.Columns>
+                                            <DataGrid.ColumnHeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                    <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                                    <Setter Property="Foreground" Value="{StaticResource PrimaryFont}" />
+                                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGrid.ColumnHeaderStyle>
+                                        </DataGrid>
+                                    </StackPanel>
+                                </TabItem>
+                            </TabControl>
+                        </GroupBox>
+                    </StackPanel>
+                </StackPanel>
+                <GroupBox Header="Новый пароль" Margin="10,5,10,0" Height="Auto" MouseEnter="GroupBox_MouseEnter" Tag="Добавление новой записи" MouseLeave="GroupBox_MouseLeave">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+
+                            <Label Content="Имя" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="Name" Grid.Row="1" Grid.Column="0" MaxLength="20" Background="{DynamicResource AreaBackground}"/>
+
+                            <Label Content="Логин" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="Login" Grid.Row="1" Grid.Column="1" MaxLength="20" Background="{DynamicResource AreaBackground}"/>
+
+                            <Label Content="Пароль" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="Password" Grid.Row="1" Grid.Column="2" MaxLength="20" Background="{DynamicResource AreaBackground}"/>
+
+                            <Label Content="Комментарий" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="Comment" Grid.Row="1" Grid.Column="3" MaxLength="70" Background="{DynamicResource AreaBackground}"/>
+
+                            <Label Content="Введите адресс(URL)" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center"/>
+                            <TextBox x:Name="Url" Grid.Row="1" Grid.Column="4" MaxLength="40" Background="{DynamicResource AreaBackground}"/>
+                        </Grid>
+                        <Button x:Name="Add" Content="Добавить" Width="120" Margin="0,7" Click="AddPass"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
-            <StackPanel>
-                <GroupBox Header="Пароли" Width="570" Height="250" Margin="10,0,0,0" BorderBrush="Blue">
-                    <TabControl>
-                        <TabItem Header="Все пароли">
-                            <DataGrid x:Name="Table" ColumnWidth="Auto" AutoGenerateColumns="False" CanUserAddRows="True">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Binding="{Binding Name}" Header="Имя сайта или игры" MinWidth="120"/>
-                                    <DataGridTextColumn Binding="{Binding Log}"  Header="Логин" MinWidth="120"/>
-                                    <DataGridTextColumn Binding="{Binding Pas}"  Header="Пароль" MinWidth="170"/>
-                                    <DataGridTextColumn Binding="{Binding Com}" Header="Комментарий" MinWidth="170"/>
-                                </DataGrid.Columns>
-                                <DataGrid.ColumnHeaderStyle>
-                                    <Style TargetType="{x:Type DataGridColumnHeader}">
-                                        <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-                                        <Setter Property="Foreground" Value="{StaticResource PrimaryFont}" />
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                    </Style>
-                                </DataGrid.ColumnHeaderStyle>
-                            </DataGrid>
-                        </TabItem>
-                        <TabItem Header="Поиск">
-                            <StackPanel Orientation="Vertical" Background="White">
-                                <StackPanel Orientation="Horizontal" Margin="0,5">
-                                    <Label>Слово для поиска:</Label>
-                                    <TextBox x:Name="Search" Width="150" Margin="10,0,0,0"></TextBox>
-                                    <Button x:Name="SearchButton" Content="Поиск" Width="100" Margin="10,0" Click="GoSearch"/>
-                                </StackPanel>
-                                <DataGrid x:Name="TableView" ColumnWidth="Auto" AutoGenerateColumns="False" CanUserAddRows="True" Height="161">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Binding="{Binding Name}" Header="Имя сайта или игры" MinWidth="120"/>
-                                        <DataGridTextColumn Binding="{Binding Log}"  Header="Логин" MinWidth="120"/>
-                                        <DataGridTextColumn Binding="{Binding Pas}"  Header="Пароль" MinWidth="170"/>
-                                        <DataGridTextColumn Binding="{Binding Com}" Header="Комментарий" MinWidth="170"/>
-                                    </DataGrid.Columns>
-                                    <DataGrid.ColumnHeaderStyle>
-                                        <Style TargetType="{x:Type DataGridColumnHeader}">
-                                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
-                                            <Setter Property="Foreground" Value="{StaticResource PrimaryFont}" />
-                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        </Style>
-                                    </DataGrid.ColumnHeaderStyle>
-                                </DataGrid>
-                            </StackPanel>
-                        </TabItem>
-                    </TabControl>
-                </GroupBox>
-            </StackPanel>
-        </StackPanel>
-            <GroupBox Header="Действия" Margin="10,5,10,0" BorderBrush="Blue">
-            <StackPanel Orientation="Vertical">
-                <Grid Margin="10,10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition />
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-
-                    <Label Content="Имя" Grid.Row="0" Grid.Column="0"></Label>
-                    <TextBox x:Name="Name" Width="250" Grid.Row="0" Grid.Column="1" MaxLength="20"/>
-
-                    <Label Content="Логин" Grid.Row="0" Grid.Column="2"></Label>
-                    <TextBox x:Name="Login" Width="250" Grid.Row="0" Grid.Column="3" MaxLength="20"/>
-
-                    <Label Content="Пароль" Grid.Row="1" Grid.Column="0"></Label>
-                    <TextBox x:Name="Password" Width="250" Grid.Row="1" Grid.Column="1" MaxLength="20"/>
-
-                    <Label Content="Комментарий" Grid.Row="1" Grid.Column="2"></Label>
-                    <TextBox x:Name="Comment" Width="250" Grid.Row="1" Grid.Column="3" MaxLength="70"/>
-                </Grid>
-                <Button x:Name="Add" Width="100" Margin="0,0,0,10" Content="Добавить" Click="AddPass"/>
-            </StackPanel>
-        </GroupBox>
+        </Viewbox>
+        <StatusBar Height="30" Margin="0,10,0,0">
+            <StatusBarItem x:Name="StatBar"></StatusBarItem>
+        </StatusBar>
     </StackPanel>
 </Window>

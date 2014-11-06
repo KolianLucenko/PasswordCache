@@ -1,0 +1,71 @@
+﻿<Window x:Class="PasswordCache.reference"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Справка" MinHeight="500" Height="500" MaxHeight="500" Width="550" Icon="Resource/questionICO.ico">
+    <StackPanel Orientation="Vertical">
+        <ScrollViewer Height="465">
+            <StackPanel Orientation="Vertical">
+                <Expander Header="Описание программы">
+                    <Label>
+                        <Label.Content>
+                            <TextBlock TextWrapping="Wrap" Width="Auto">Данная программа (Password Cache 1.0) предназначенна для хранения и генерации паролей.
+                                Целью разработки являлась причина частой потери паролей, логинов, ссылок и т.д. На данный программный продукт не наложенны
+                                ограничения в распространении.</TextBlock>
+                        </Label.Content>
+                    </Label>
+                </Expander>
+                <Expander Header="Работа с программой">
+                    <StackPanel Orientation="Vertical">
+                        <GroupBox Header="Генерация пароля" Margin="5,5">
+                            <Label>
+                                <Label.Content>
+                                    <TextBlock TextWrapping="Wrap" Width="Auto">
+                                        В левой части экрана есть блок с подписью "Генерация пароля" Там вы увидите такие поля: Количество символов(это поле ОБЯЗАТЕЛЬНО 
+                                        для ввода) - указывается размер пароля, Использовать цифры(не обязательно для ввода) - указывается для генерации пароля с цифрами, Использовать
+                                        регистр(не обязательно для ввода) - указывается для использования в пароле букв разного регистра.
+                                        После указания обязательных и нужных полей надо нажать кнопку "Генерация пароля". После нажатия на кнопку ниже появится поле с сгенерированным паролем. 
+                                        Если данный пароль не удовлетворяет ваши потребности то просто нажмите ещё раз кнопку "Генерация пароля".
+                                    </TextBlock>
+                                </Label.Content>
+                            </Label>
+                        </GroupBox>
+                        <GroupBox Header="Просмотр, редактирование, удаление, поиск паролей" Margin="5,5">
+                            <Label>
+                                <Label.Content>
+                                    <TextBlock TextWrapping="Wrap" Width="Auto">
+                                        Большую часть программы занимает блок "Пароли" в нем находится 2 вкладки: все пароли и поиск.
+                                        во вкладке "все пароли" находится таблица со всеми вашими сохраненными паролями, логинами, ссылками и комментариями.
+                                        УДАЛЕНИЕ - для удаления записи нажмите левой кнопкой мыши на нужную строку в таблице и нажмите кнопку DELETE на клавиатуре
+                                        РЕДАКТИРОВАНИЕ - для редактирования выберите двойным нажатием левой кнопкой мыши нужную строку и столбец, а дальше просто вводите новые данные.
+                                        ПОИСК - перейдите во вкладку поиск и введите в поле поиска нужную цифру,букву, слово или фразу и нажмите кнопку "поиск".
+                                    </TextBlock>
+                                </Label.Content>
+                            </Label>
+                        </GroupBox>
+                        <GroupBox Header="Добавление новых записей" Margin="5,5">
+                            <Label>
+                                <Label.Content>
+                                    <TextBlock TextWrapping="Wrap" Width="Auto">
+                                        В нижней части экрана находится блок под названием "Новый пароль". В нем находятся обязательные
+                                        и не обязательные поля для ввода. К обязательным относятся Имя ресурса и пароль. Остальные
+                                        поля можно не вводить. После заполнения нужных полей нажать кнопку "Добавить" и в списке
+                                        ваших записей появится новая запись.
+                                    </TextBlock>
+                                </Label.Content>
+                            </Label>
+                        </GroupBox>
+                    </StackPanel>
+                </Expander>
+                <Expander Header="Разработчик">
+                    <Label>
+                        <Label.Content>
+                            <TextBlock TextWrapping="Wrap" Width="Auto">
+                                        Благодарности, советы и пожелания отправляйте по адрессу kolya.lutsenko.dev.@mail.ru
+                            </TextBlock>
+                        </Label.Content>
+                    </Label>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+    </StackPanel>
+</Window>

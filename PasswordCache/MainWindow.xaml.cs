@@ -15,6 +15,9 @@ using System.Windows.Shapes;
 using System.Data;
 using System.Data.SqlClient;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using Microsoft.Win32;
 
 namespace PasswordCache
 {
@@ -29,30 +32,20 @@ namespace PasswordCache
         private string[] lat = new string[] {"a","b","c","d","e","f","j","h","i","g","k","l","m","n",
                                                         "o","p","q","r","s","t","u","v","w","x","y","z"};
 
-        private DataSet ds = new DataSet();
         private List<Data> myData = new List<Data>();
         private List<Data> t = new List<Data>();
-        SqlDataAdapter dAdapt;
-        private string conString = "Data Source=(local);Initial Catalog=Pass;Integrated Security=True";
-
+        private string FName = "my.pac";
 
         public MainWindow()
         {
             InitializeComponent();
             try
             {
-                dAdapt = new SqlDataAdapter("Select * from Ps", conString);
-                SqlCommandBuilder builder = new SqlCommandBuilder(dAdapt);
-
-                dAdapt.Fill(ds, "password");
-
-
-                var dataList = from c in ds.Tables["password"].AsEnumerable()
-                                    select new Data(c.Field<string>("Имя(сайт,игра)"), c.Field<string>("Логин"),
-                                        c.Field<string>("Пароль"), c.Field<string>("Комментарий"));
-                foreach (var c in dataList)
-                    myData.Add(c);
-
+                if (File.Exists(FName))
+                {
+                    OpenDB(FName);
+                }
+                
                 Table.ItemsSource = myData;
                                     
             }
@@ -60,6 +53,20 @@ namespace PasswordCache
             {
                 MessageBox.Show(x.Message);
             }
+        }
+
+        /// <summary>
+        /// Загрузить базу из файла
+        /// </summary>
+        /// <param name="name"></param>
+        private void OpenDB(string name)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (Stream str = File.OpenRead(name))
+            {
+                myData = (List<Data>)bf.Deserialize(str);
+            }
+            Table.ItemsSource = myData;
         }
 
         /// <summary>
@@ -121,16 +128,20 @@ namespace PasswordCache
             return result;
         }
 
-
+        /// <summary>
+        /// Обработчик кнопки генерации пароля
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ResultPass.Visibility = System.Windows.Visibility.Visible;
             try
             {
                 int c;
                 if (!Int32.TryParse(Count.Text, out c))
                     throw new Exception("Количество символов должно быть числом!");
 
+                ResultPass.Visibility = System.Windows.Visibility.Visible;
                 ResultPass.Text = GeneretionPassword(c, (bool)Numb.IsChecked, (bool)isCase.IsChecked);
             }
             catch(Exception ex){
@@ -141,34 +152,32 @@ namespace PasswordCache
         /// <summary>
         /// Обновление данных в базе
         /// </summary>
-        private void CreateDT()
+        private void CreateDT(string name)
         {
-            SqlConnection sqlConnection1 = new SqlConnection(conString);
-            SqlCommand cmd = new SqlCommand();
-
-            cmd.CommandText = "DELETE FROM Ps";
-            cmd.CommandType = CommandType.Text;
-            cmd.Connection = sqlConnection1;
-
-            sqlConnection1.Open();
-            cmd.ExecuteNonQuery();
-            sqlConnection1.Close();
-
-            foreach(var d in myData){
-                DataRow row = ds.Tables["password"].NewRow();
-                row["Имя(сайт,игра)"] = d.Name;
-                row["Логин"] = d.Log;
-                row["Пароль"] = d.Pas;
-                row["Комментарий"] = d.Com;
-                ds.Tables["password"].Rows.Add(row);
+            BinaryFormatter bf = new BinaryFormatter();
+            using (Stream str = new FileStream(name, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                bf.Serialize(str, myData);
             }
-            dAdapt.Update(ds, "password");
 
         }
-
+        /// <summary>
+        /// Обработчик закрытия окна
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            CreateDT();
+            CreateDT(FName);
+        }
+
+        /// <summary>
+        /// Сохранение изминений
+        /// </summary>
+        private void SaveDB()
+        {            
+                if (MessageBox.Show("Сохранить изминения?", "Сохранение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    CreateDT(FName);
         }
 
         /// <summary>
@@ -181,16 +190,15 @@ namespace PasswordCache
             try{
                 if (Name.Text == "")
                     throw new Exception("Вы не ввели имя объекта пароля(сайт или игра)");
-                if (Login.Text == "")
-                    throw new Exception("Вы не ввели логин");
                 if (Password.Text == "")
                     throw new Exception("Вы не ввели пароль");
 
-                myData.Add(new Data(Name.Text, Login.Text, Password.Text, Comment.Text));
+                myData.Add(new Data(Name.Text, Login.Text, Password.Text, Comment.Text,Url.Text));
                 Name.Text = "";
                 Login.Text = "";
                 Password.Text = "";
                 Comment.Text = "";
+                Url.Text = "";
 
                 Table.ItemsSource = t;
                 Table.ItemsSource = myData;
@@ -207,10 +215,80 @@ namespace PasswordCache
         private void GoSearch(object sender, RoutedEventArgs e)
         {
             TableView.ItemsSource = t;
-            TableView.ItemsSource = from c in myData
+            List<Data> dat = (from c in myData
                                     where
-                                        c.Com.ToLower() == Search.Text.ToLower() || c.Log.ToLower() == Search.Text.ToLower() || c.Name.ToLower() == Search.Text.ToLower() || c.Pas.ToLower() == Search.Text.ToLower()
-                                    select c;
+                                          c.Name.ToLower().Contains(Search.Text.ToLower()) || c.Log.ToLower().Contains(Search.Text.ToLower()) || c.Com.ToLower().Contains(Search.Text.ToLower()) || c.Pas.ToLower().Contains(Search.Text.ToLower())
+                                    select c).ToList<Data>();
+            if (dat != null)
+                TableView.ItemsSource = dat;
+            else
+                MessageBox.Show("Совпадений нет");
+        }
+
+        /// <summary>
+        /// Кнопка в меня для сохранения
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog Sdlg = new SaveFileDialog();
+            Sdlg.Filter = "Password data base (.pac)|*.pac";
+            if (Sdlg.ShowDialog()==true)
+            {
+                FName = Sdlg.FileName;
+                CreateDT(Sdlg.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Закрыть программу
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        /// <summary>
+        /// Открыть справку
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            reference refer = new reference();
+            refer.Show();
+        }
+
+        /// <summary>
+        /// Кнопка открыть файл в меню
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenFile(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog Odlg = new OpenFileDialog();
+            Odlg.Filter = "Password data base (.pac)|*.pac";
+            if (Odlg.ShowDialog() == true)
+            {
+                OpenDB(Odlg.FileName);
+                FName = Odlg.FileName;
+            }
+        }
+
+        private void GroupBox_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if((sender as GroupBox)!=null)
+                StatBar.Content = string.Format("{0} , всего записей - {1}", (sender as GroupBox).Tag.ToString(), myData.Count);
+            if((sender as TabItem)!=null)
+                StatBar.Content = string.Format("{0} , всего записей - {1}", (sender as TabItem).Tag.ToString(), myData.Count);
+        }
+
+        private void GroupBox_MouseLeave(object sender, MouseEventArgs e)
+        {
+            StatBar.Content = string.Format("Ожидание... , всего записей - {0}", myData.Count);
         }
     }
 }
