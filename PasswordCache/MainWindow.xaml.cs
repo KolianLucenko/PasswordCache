@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.Win32;
+using System.Reflection;
 
 namespace PasswordCache
 {
@@ -34,8 +35,13 @@ namespace PasswordCache
 
         private List<Data> myData = new List<Data>();
         private List<Data> t = new List<Data>();
-        private string FName = "my.pac";
+        private string FName = "my.psc";
 
+        /// <summary>
+        /// Привязка расширения к программе
+        /// </summary>
+        /// <param name="applicationExecutablePath"></param>
+        /// <param name="extension"></param>
         public MainWindow()
         {
             InitializeComponent();
@@ -45,15 +51,14 @@ namespace PasswordCache
                 {
                     OpenDB(FName);
                 }
-                
                 Table.ItemsSource = myData;
-                                    
             }
             catch (Exception x)
             {
                 MessageBox.Show(x.Message);
             }
         }
+
 
         /// <summary>
         /// Загрузить базу из файла
@@ -67,6 +72,7 @@ namespace PasswordCache
                 myData = (List<Data>)bf.Deserialize(str);
             }
             Table.ItemsSource = myData;
+            FName = name;
         }
 
         /// <summary>
@@ -233,7 +239,7 @@ namespace PasswordCache
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             SaveFileDialog Sdlg = new SaveFileDialog();
-            Sdlg.Filter = "Password data base (.pac)|*.pac";
+            Sdlg.Filter = "Password data base (.psc)|*.psc";
             if (Sdlg.ShowDialog()==true)
             {
                 FName = Sdlg.FileName;
@@ -270,7 +276,7 @@ namespace PasswordCache
         private void OpenFile(object sender, RoutedEventArgs e)
         {
             OpenFileDialog Odlg = new OpenFileDialog();
-            Odlg.Filter = "Password data base (.pac)|*.pac";
+            Odlg.Filter = "Password data base (.psc)|*.psc";
             if (Odlg.ShowDialog() == true)
             {
                 OpenDB(Odlg.FileName);
@@ -289,6 +295,11 @@ namespace PasswordCache
         private void GroupBox_MouseLeave(object sender, MouseEventArgs e)
         {
             StatBar.Content = string.Format("Ожидание... , всего записей - {0}", myData.Count);
+        }
+
+        private void MenuItem_Click_3(object sender, RoutedEventArgs e)
+        {
+            CreateDT(FName);
         }
     }
 }
